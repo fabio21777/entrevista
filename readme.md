@@ -284,32 +284,23 @@ Segundo a IBM, um banco de dados não relacional (NoSQL) é um tipo de banco de 
 
 Com base no artigo da IBM sobre bancos de dados NoSQL ([fonte oficial da IBM](https://www.ibm.com/br-pt/think/topics/nosql-databases)), aqui está uma **comparação descritiva** entre bancos de dados **relacionais (SQL)** e **não relacionais (NoSQL)**:
 
----
+![alt text](image-5.png)
 
-### 🧱 Banco de Dados Relacional (SQL)
-
-Os bancos de dados relacionais armazenam dados em **tabelas estruturadas** com linhas e colunas. Cada tabela representa uma entidade (como usuários, pedidos, produtos), e as relações entre essas tabelas são definidas por **chaves primárias e estrangeiras**. Esse modelo exige um **esquema fixo**, ou seja, a estrutura dos dados (quais colunas existem, seus tipos e regras) precisa ser definida antes de inserir qualquer informação.
-
-A consulta e manipulação de dados são feitas com a linguagem **SQL (Structured Query Language)**, que é padronizada e poderosa, especialmente para realizar **joins** (junções) entre tabelas.
-
-Esses bancos são ideais para aplicações que exigem **alta consistência**, integridade de dados e **transações seguras**, já que implementam totalmente as propriedades **ACID** (Atomicidade, Consistência, Isolamento e Durabilidade). Por isso, são amplamente usados em sistemas bancários, ERP, CRM e outros sistemas corporativos.
-
----
 
 ### 📦 Banco de Dados Não Relacional (NoSQL)
 
-Por outro lado, bancos de dados não relacionais foram projetados para lidar com **dados variados, grandes volumes e mudanças rápidas de estrutura**. Eles **não utilizam tabelas**, e sim modelos alternativos, como:
+Bancos de dados não relacionais foram projetados para lidar com **dados variados, grandes volumes e mudanças rápidas de estrutura**. Eles **não utilizam tabelas**, e sim modelos alternativos, como:
 
-* **Documentos** (ex: JSON no MongoDB)
-* **Pares chave-valor** (como no Redis)
-* **Grafos** (Neo4j)
-* **Colunas** (Cassandra)
+- **Documentos** (ex: JSON no MongoDB)
+- **Pares chave-valor** (ex: Redis)
+- **Grafos** (ex: Neo4j)
+- **Colunas** (ex: Cassandra)
 
-O principal diferencial é que esses bancos permitem um **esquema flexível ou inexistente**, ou seja, cada registro pode ter um formato diferente. Isso é útil em aplicações modernas, onde os dados mudam com frequência, como em redes sociais, sistemas de recomendação ou IoT.
+O principal diferencial desses bancos é permitir um **esquema flexível ou inexistente**, ou seja, cada registro pode ter um formato diferente. Isso é útil em aplicações modernas, onde os dados mudam com frequência, como em redes sociais, sistemas de recomendação ou IoT.
 
-Em vez de SQL, usam **APIs específicas** ou linguagens de consulta próprias para cada tipo de banco. Além disso, priorizam a **escalabilidade horizontal**, o que significa que podem ser facilmente distribuídos entre vários servidores — ideal para grandes volumes de acesso e dados.
+Em vez de SQL, utilizam **APIs específicas** ou linguagens de consulta próprias para cada tipo de banco. Além disso, priorizam a **escalabilidade horizontal**, o que significa que podem ser facilmente distribuídos entre vários servidores — ideal para grandes volumes de acesso e dados.
 
-Eles nem sempre seguem as regras rígidas de transações ACID, optando por modelos como **consistência eventual**, onde os dados são sincronizados com o tempo, mas não necessariamente de forma imediata.
+Nem sempre seguem as regras rígidas de transações ACID, optando por modelos como **consistência eventual**, onde os dados são sincronizados com o tempo, mas não necessariamente de forma imediata.
 
 ![alt text](image-4.png)
 
@@ -317,8 +308,8 @@ Eles nem sempre seguem as regras rígidas de transações ACID, optando por mode
 
 ### ✔ Em resumo:
 
-* Os bancos **relacionais (SQL)** são excelentes quando você precisa de estrutura rigorosa, consistência total e transações confiáveis.
-* Os bancos **não relacionais (NoSQL)** brilham quando você precisa de **flexibilidade, performance e escalabilidade em larga escala**, mesmo que isso signifique abrir mão de algumas garantias imediatas de consistência.
+- Bancos **relacionais (SQL)** são excelentes quando você precisa de estrutura rigorosa, consistência total e transações confiáveis.
+- Bancos **não relacionais (NoSQL)** brilham quando você precisa de **flexibilidade, performance e escalabilidade em larga escala**, mesmo que isso signifique abrir mão de algumas garantias imediatas de consistência.
 
 Se quiser, posso montar um exemplo prático de um modelo de dados relacional vs. não relacional. Deseja isso?
 
