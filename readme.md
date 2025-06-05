@@ -227,39 +227,100 @@ A **idempotência** é uma propriedade que garante que múltiplas execuções da
 
 ---
 
-## Banco de Dados
+## [Banco de Dados](https://www.oracle.com/database/what-is-a-relational-database/)
+
+Um banco de dados relacional é um tipo de banco de dados que armazena e fornece acesso a pontos de dados relacionados entre si. Os bancos de dados relacionais são baseados no modelo relacional, uma maneira intuitiva e direta de representar dados em tabelas. Em um banco de dados relacional, cada linha da tabela é um registro com um ID exclusivo chamado chave. As colunas da tabela contêm atributos dos dados, e cada registro geralmente possui um valor para cada atributo, facilitando o estabelecimento de relacionamentos entre os pontos de dados.
+
+
 
 ### O que é um banco de dados relacional? Quando usar?
 
+* Os dados forem estruturados e consistentes (ex: registros de clientes, vendas, produtos).
+* For necessário garantir integridade referencial (ex: relacionamento entre pedidos e clientes).
+* Transações complexas e ACID (Atomicidade, Consistência, Isolamento, Durabilidade) forem exigidas.
+* For necessário realizar consultas complexas com base nos relacionamentos entre os dados (ex: relatórios financeiros, análises de vendas).
 
 ---
 
 #### ACID - O que é e como funciona?
-<!-- Resposta: -->
+
+Claro! Aqui vai uma explicação **direta** e baseada no link da Oracle sobre ACID:
 
 ---
 
-### O que é um banco de dados não relacional? Quando usar?
-<!-- Resposta: -->
+### ✅ ACID – Propriedades de uma transação no banco de dados relacional
+
+1. **Atomicidade**:
+   Tudo ou nada. A transação é executada por completo ou desfeita.
+
+2. **Consistência**:
+   Garante que as regras do banco sejam sempre respeitadas.
+
+3. **Isolamento**:
+   Transações paralelas não se interferem.
+
+4. **Durabilidade**:
+   Depois de confirmada, a transação não é perdida, mesmo com queda de energia.
+
+
+![alt text](image-3.png)
 
 ---
 
-#### Relação entre bancos relacionais e não relacionais
-<!-- Resposta: -->
+### [O que é um banco de dados não relacional? Quando usar?](https://www.ibm.com/br-pt/think/topics/nosql-databases)
+
+Segundo a IBM, um banco de dados não relacional (NoSQL) é um tipo de banco de dados que não armazena dados em tabelas tradicionais com linhas e colunas, como fazem os bancos de dados relacionais. Em vez disso, ele usa modelos de dados flexíveis, que são mais adequados para tipos de dados diversos e dinâmicos, como documentos, grafos, colunas largas ou pares chave-valor.
+
+### Quando usar um banco de dados não relacional?
+
+* Os dados são semi-estruturados ou não estruturados.
+* É necessário um modelo de dados que muda rapidamente.
+
+* Deseja-se uma análise leve, de baixa latência, integrada ao banco de dados operacional.
+* É preciso de visualizações em tempo real dos negócios, mesmo que os dados estejam em silos.
+* Desenvolve-se aplicativos que precisam armazenar grandes quantidades de dados com diferentes tipos, como dados estruturados, não estruturados e polimórficos.
+* É necessário escalar horizontalmente para lidar com grandes volumes de dados e alta taxa de transferência.
+
+
+Com base no artigo da IBM sobre bancos de dados NoSQL ([fonte oficial da IBM](https://www.ibm.com/br-pt/think/topics/nosql-databases)), aqui está uma **comparação descritiva** entre bancos de dados **relacionais (SQL)** e **não relacionais (NoSQL)**:
 
 ---
 
-## Novidades
+### 🧱 Banco de Dados Relacional (SQL)
 
-### Novas features do Java e como usar
-<!-- Resposta: -->
+Os bancos de dados relacionais armazenam dados em **tabelas estruturadas** com linhas e colunas. Cada tabela representa uma entidade (como usuários, pedidos, produtos), e as relações entre essas tabelas são definidas por **chaves primárias e estrangeiras**. Esse modelo exige um **esquema fixo**, ou seja, a estrutura dos dados (quais colunas existem, seus tipos e regras) precisa ser definida antes de inserir qualquer informação.
 
----
+A consulta e manipulação de dados são feitas com a linguagem **SQL (Structured Query Language)**, que é padronizada e poderosa, especialmente para realizar **joins** (junções) entre tabelas.
 
-### Novas features do Postgres e como usar
-<!-- Resposta: -->
+Esses bancos são ideais para aplicações que exigem **alta consistência**, integridade de dados e **transações seguras**, já que implementam totalmente as propriedades **ACID** (Atomicidade, Consistência, Isolamento e Durabilidade). Por isso, são amplamente usados em sistemas bancários, ERP, CRM e outros sistemas corporativos.
 
 ---
 
-### Diferenças entre Spring Boot e frameworks nativos (Quarkus, Micronaut)
-<!-- Resposta: -->
+### 📦 Banco de Dados Não Relacional (NoSQL)
+
+Por outro lado, bancos de dados não relacionais foram projetados para lidar com **dados variados, grandes volumes e mudanças rápidas de estrutura**. Eles **não utilizam tabelas**, e sim modelos alternativos, como:
+
+* **Documentos** (ex: JSON no MongoDB)
+* **Pares chave-valor** (como no Redis)
+* **Grafos** (Neo4j)
+* **Colunas** (Cassandra)
+
+O principal diferencial é que esses bancos permitem um **esquema flexível ou inexistente**, ou seja, cada registro pode ter um formato diferente. Isso é útil em aplicações modernas, onde os dados mudam com frequência, como em redes sociais, sistemas de recomendação ou IoT.
+
+Em vez de SQL, usam **APIs específicas** ou linguagens de consulta próprias para cada tipo de banco. Além disso, priorizam a **escalabilidade horizontal**, o que significa que podem ser facilmente distribuídos entre vários servidores — ideal para grandes volumes de acesso e dados.
+
+Eles nem sempre seguem as regras rígidas de transações ACID, optando por modelos como **consistência eventual**, onde os dados são sincronizados com o tempo, mas não necessariamente de forma imediata.
+
+![alt text](image-4.png)
+
+---
+
+### ✔ Em resumo:
+
+* Os bancos **relacionais (SQL)** são excelentes quando você precisa de estrutura rigorosa, consistência total e transações confiáveis.
+* Os bancos **não relacionais (NoSQL)** brilham quando você precisa de **flexibilidade, performance e escalabilidade em larga escala**, mesmo que isso signifique abrir mão de algumas garantias imediatas de consistência.
+
+Se quiser, posso montar um exemplo prático de um modelo de dados relacional vs. não relacional. Deseja isso?
+
+
+
