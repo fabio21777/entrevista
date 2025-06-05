@@ -2,7 +2,7 @@
 
 ## Filas
 
-### Tipos de Filas
+### [Tipos de Filas aws](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html)
 
 #### Fila Padrão (Standard)
 
@@ -33,7 +33,7 @@
 
 ---
 
-## Volumetria
+## [Volumetria](https://witify.io/en/blog/volumetric-software-planning-and-managing-your-data/)
 
 > **Volumetria:** Quantidade total de dados gerenciados por um sistema (armazenamento, processamento, transmissão).
 
@@ -153,31 +153,84 @@ No Kafka, temos produtores publicando mensagens em tópicos, consumidores lendo 
 
 ---
 
-
+---
 
 ---
 
-## HTTP - Principais conceitos
+### [Principais Códigos de Status HTTP](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Reference/Status)
 
-### Principais verbos HTTP
-<!-- Resposta: -->
+Os códigos de status HTTP indicam o resultado de uma requisição feita a um servidor. Eles são organizados por classes numéricas:
+
+#### 🔵 1xx - Informativo
+
+* **100 Continue**: O cliente pode continuar com a requisição.
+* **101 Switching Protocols**: O servidor está mudando de protocolo, conforme solicitado.
+
+#### 🟢 2xx - Sucesso
+
+* **200 OK**: Requisição bem-sucedida.
+* **201 Created**: Um novo recurso foi criado.
+* **202 Accepted**: A requisição foi aceita, mas ainda não processada.
+* **204 No Content**: A requisição foi bem-sucedida, sem conteúdo de resposta.
+
+#### 🟡 3xx - Redirecionamento
+
+* **300 Multiple Choices**: Existem múltiplas opções para o recurso solicitado.
+* **301 Moved Permanently**: O recurso foi movido de forma permanente.
+* **302 Found**: O recurso foi encontrado em outra URL temporariamente.
+* **303 See Other**: Redirecionamento para outro recurso.
+* **304 Not Modified**: O recurso não foi modificado desde a última solicitação.
+* **307 Temporary Redirect**: Redirecionamento temporário mantendo o método original.
+* **308 Permanent Redirect**: Redirecionamento permanente mantendo o método original.
+
+#### 🔴 4xx - Erro do Cliente
+
+* **400 Bad Request**: Erro na requisição do cliente.
+* **401 Unauthorized**: Autenticação necessária.
+* **403 Forbidden**: Acesso ao recurso negado.
+* **404 Not Found**: Recurso não encontrado.
+* **405 Method Not Allowed**: Método HTTP não permitido para esse recurso.
+* **409 Conflict**: Conflito no estado atual do recurso.
+* **422 Unprocessable Entity**: Requisição bem formada, mas não processável.
+* **429 Too Many Requests**: Limite de requisições excedido.
+
+#### ⚫ 5xx - Erro do Servidor
+
+* **500 Internal Server Error**: Erro interno no servidor.
+* **501 Not Implemented**: Método não implementado pelo servidor.
+* **502 Bad Gateway**: Resposta inválida de um gateway.
+* **503 Service Unavailable**: Serviço temporariamente indisponível.
+* **504 Gateway Timeout**: Timeout ao esperar resposta de outro servidor.
 
 ---
 
-### Principais códigos de status HTTP
-<!-- Resposta: -->
+### [Verbos HTTP e Idempotência](https://developer.mozilla.org/pt-BR/docs/Glossary/Idempotent)
 
----
+A **idempotência** é uma propriedade que garante que múltiplas execuções da mesma requisição produzem o mesmo efeito no servidor.
 
-### O que é idempotência e relação com HTTP?
-<!-- Resposta: -->
+#### [Verbos HTTP comuns](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Reference/Methods):
+
+* **GET**: Recupera dados de um recurso. ✅ Idempotente.
+* **POST**: Envia dados para criação de um novo recurso. ❌ Não idempotente(porém é possivel torná-lo idempotente com práticas específicas como uuid no cliente side).
+* **PUT**: Atualiza ou cria um recurso com um identificador específico. ✅ Idempotente.
+* **PATCH**: Atualiza parcialmente um recurso. ⚠️ Nem sempre idempotente(pode existe contadores e modificares de estado para cada atualização).
+* **DELETE**: Remove um recurso. ✅ Idempotente (assumindo deleção repetida não causa erro).
+* **HEAD**: Retorna apenas os headers do recurso. ✅ Idempotente(Imagine que você quer saber se uma imagem existe e qual o tamanho dela, mas sem baixá-la.).
+* **OPTIONS**: Retorna os métodos permitidos. ✅ Idempotente(O método OPTIONS é usado para descobrir quais métodos HTTP são suportados por um recurso ou servidor. Ele é muito utilizado em CORS (Cross-Origin Resource Sharing)).
+* **CONNECT**: Estabelece um túnel TCP (usado com HTTPS- CONNECT é usado principalmente para estabelecer um túnel TCP entre o cliente e o servidor, permitindo a comunicação segura, como em conexões HTTPS através de proxies.). ❌ Não idempotente.
+* **PURGE**: (usado por alguns proxies) Limpa cache. ❌ Não idempotente.
+
+#### Por que importa?
+
+* **Requisições idempotentes** são seguras para reexecução em falhas de rede.
+* **Servidores e proxies** podem aplicar caching, retries e roteamento confiável com base nessa característica.
 
 ---
 
 ## Banco de Dados
 
 ### O que é um banco de dados relacional? Quando usar?
-<!-- Resposta: -->
+
 
 ---
 
