@@ -31,40 +31,47 @@
 
 ## Volumetria
 
-> **Volumetria**: Quantidade total de dados gerenciados por um sistema (armazenamento, processamento, transmissão).
+> **Volumetria:** Quantidade total de dados gerenciados por um sistema (armazenamento, processamento, transmissão).
 
-Contexto: Um sistema web utilizado para gerenciar eventos e emitir certificados digitais personalizados para os participantes.
+**Contexto:**
+Sistema web para gerenciar eventos e emitir certificados digitais personalizados.
 
-⚙️ Processamento
-Geração de certificados em lote:
-
-1.000 certificados por evento
-
-Tempo médio para geração: 0,2s por certificado
-
-Processamento total por evento: ~3 minutos e 20 segundos
-
-Picos de geração simultânea:
-
-Até 10.000 certificados/dia em períodos de alta demanda
-
-Requer escalonamento automático de instâncias de geração
-
-
----
-
-### Qual fila era usada?
-<!-- Resposta: -->
+- Geração em lote: cerca de 1.000 certificados por evento
+- Tempo médio de geração: 0,2s por certificado (~3min20s por evento)
+- Pico de demanda: até 10.000 certificados/dia em períodos de alta
+- Necessidade de escalonamento automático das instâncias de geração
 
 ---
 
 ### Estratégias para lidar com erros de filas
-<!-- Resposta: -->
 
-- Retentativas (envio, leitura, processamento)
-- Dead Letter Queue (DLQ)
-- Backoff exponencial para retentativas
+- **Retry com controle de tentativas:**
+  Reenvio automático de mensagens que falharam, com limite máximo de tentativas configurável.
 
+- **Backoff exponencial (com ou sem jitter):**
+  Aumenta o tempo de espera entre tentativas de forma crescente (e, opcionalmente, aleatória), evitando sobrecarga em serviços instáveis.
+
+- **Dead Letter Queue (DLQ):**
+  Armazena mensagens que excederam o número de tentativas, permitindo análise e reprocessamento posterior.
+
+- **Retry com delay via fila temporária:**
+  Utiliza uma fila intermediária com TTL (Time-To-Live) para reprocessar mensagens após um intervalo de tempo.
+
+- **Circuit Breaker:**
+  Interrompe temporariamente o processamento quando há um número elevado de falhas, protegendo o sistema de colapsos em cascata.
+
+- **Classificação de erros:**
+  Diferencia erros transitórios (passíveis de retry) de erros definitivos (como dados inválidos), evitando tentativas desnecessárias.
+
+- **Tratamento de mensagens tóxicas (Poison Messages):**
+  Isola mensagens que causam falhas sistemáticas, impedindo que travem o sistema de processamento.
+
+- **Idempotência:**
+  Se necessário, garante que o processamento de uma mensagem não cause efeitos colaterais indesejados, mesmo se for reprocessada.
+
+- **Monitoramento e alertas:**
+-
+  Observabilidade sobre falhas e DLQs para resposta proativa e visibilidade de anomalias.
 ---
 
 ### Estratégias para erros no processamento de arquivos
