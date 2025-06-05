@@ -27,4 +27,5 @@
 - **Rendimento controlado:** Até 3.000 mensagens/s em lote, 300/s individual.
 
 **Quando usar?**
+
 - Ordem dos eventos é essencial (ex: comandos sequenciais, atualização de preços, matrícula em etapas).
