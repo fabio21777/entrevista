@@ -2,11 +2,9 @@
 
 Ao processar arquivos, é fundamental adotar práticas que aumentem a resiliência e evitem falhas em cascata. As principais estratégias são:
 
-- **Tratamento de arquivos grandes:**
-  Utilize leitura em streaming (`BufferedReader`, `Files.lines`, `StAX`, `DataBufferUtils`) e divisão por partes (*chunking*) para evitar sobrecarga de memória.
+- **[Tratamento de arquivos grandes](https://www.baeldung.com/java-read-lines-large-file):**
+  Utilize leitura em streaming (`BufferedReader`, `inputStream`, `Scanner`, `BufferedReader`) e divisão por partes ([*chunking*](https://www.baeldung.com/java-read-file-split-into-several)) para evitar sobrecarga de memória.
 
-- **Detecção e tratamento de arquivos corrompidos:**
-  Implemente verificação de integridade (checksum, ex.: SHA-256), validação de assinatura (headers, *magic bytes*) e degradação graciosa, processando apenas as partes válidas e registrando erros.
 
 - **Processamento total vs. parcial:**
   Escolha entre abordagem atômica (tudo ou nada) ou processamento parcial com log de falhas.
