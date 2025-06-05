@@ -43,35 +43,35 @@ Sistema web para gerenciar eventos e emitir certificados digitais personalizados
 
 ---
 
-### Estratégias para lidar com erros de filas
+### Estratégias para lidar com erros em sistemas de filas
 
-- **Retry com controle de tentativas:**
-  Reenvio automático de mensagens que falharam, com limite máximo de tentativas configurável.
+- **Retry com limite de tentativas:**
+  Reenvia mensagens automaticamente após falhas temporárias, respeitando um número máximo de tentativas configurado para evitar sobrecarga e loops infinitos.
 
-- **Backoff exponencial (com ou sem jitter):**
-  Aumenta o tempo de espera entre tentativas de forma crescente (e, opcionalmente, aleatória), evitando sobrecarga em serviços instáveis.
+- **Backoff exponencial com jitter:**
+  Aumenta progressivamente o tempo entre tentativas e adiciona aleatoriedade para distribuir a carga, evitando picos simultâneos que agravam falhas.
 
 - **Dead Letter Queue (DLQ):**
-  Armazena mensagens que excederam o número de tentativas, permitindo análise e reprocessamento posterior.
+  Encaminha mensagens que excederam o limite de reprocessamento para uma fila separada, permitindo auditoria, diagnóstico ou reprocessamento manual.
 
-- **Retry com delay via fila temporária:**
-  Utiliza uma fila intermediária com TTL (Time-To-Live) para reprocessar mensagens após um intervalo de tempo.
+- **Fila de reprocessamento com atraso (delay queue):**
+  Adota filas intermediárias com tempo de vida (TTL) configurado, introduzindo uma pausa controlada antes de tentar reprocessar mensagens com falhas transitórias.
 
 - **Circuit Breaker:**
-  Interrompe temporariamente o processamento quando há um número elevado de falhas, protegendo o sistema de colapsos em cascata.
+  Bloqueia temporariamente novas tentativas quando um número crítico de falhas ocorre, protegendo os sistemas downstream de colapsos e permitindo recuperação controlada.
 
 - **Classificação de erros:**
-  Diferencia erros transitórios (passíveis de retry) de erros definitivos (como dados inválidos), evitando tentativas desnecessárias.
+  Distingue entre falhas transitórias (rede, timeout) e definitivas (dados inválidos), evitando reprocessar mensagens que nunca terão sucesso.
 
-- **Tratamento de mensagens tóxicas (Poison Messages):**
-  Isola mensagens que causam falhas sistemáticas, impedindo que travem o sistema de processamento.
+- **Isolamento de mensagens tóxicas (Poison Messages):**
+  Detecta e separa mensagens que falham consistentemente por problemas estruturais ou lógicos, impedindo que comprometam a fila inteira.
 
-- **Idempotência:**
-  Se necessário, garante que o processamento de uma mensagem não cause efeitos colaterais indesejados, mesmo se for reprocessada.
+- **Idempotência no processamento:**
+  Garante que o reenvio de uma mesma mensagem produza sempre o mesmo efeito, evitando duplicações e efeitos colaterais indesejados.
 
-- **Monitoramento e alertas:**
--
-  Observabilidade sobre falhas e DLQs para resposta proativa e visibilidade de anomalias.
+- **Observabilidade e alertas:**
+  Usa monitoramento contínuo e alarmes para detectar anomalias, acionar respostas rápidas e manter rastreabilidade sobre falhas e DLQs.
+
 ---
 
 ### Estratégias para erros no processamento de arquivos
