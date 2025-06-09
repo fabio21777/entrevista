@@ -25,3 +25,5 @@ Além disso, há padrões como *publish/subscribe* (publicação/assinatura), on
 
 Exemplo:
 No Kafka, temos produtores publicando mensagens em tópicos, consumidores lendo desses tópicos e o broker intermediando a comunicação.
+
+
