@@ -1,4 +1,4 @@
--[Banco de Dados relacional](./Banco%20de%20Dados%20relacional.md)
+- [Banco de Dados relacional](./Banco%20de%20Dados%20relacional.md)
 - [Banco de Dados não relacional](./banco_dados_nao_relacional.md)
 - [Mensageria](./Mensageria.md)
 - [Filas](./fila.md)
