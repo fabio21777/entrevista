@@ -44,6 +44,5 @@ Nem sempre seguem as regras rígidas de transações ACID, optando por modelos c
 - Bancos **relacionais (SQL)** são excelentes quando você precisa de estrutura rigorosa, consistência total e transações confiáveis.
 - Bancos **não relacionais (NoSQL)** brilham quando você precisa de **flexibilidade, performance e escalabilidade em larga escala**, mesmo que isso signifique abrir mão de algumas garantias imediatas de consistência.
 
-Se quiser, posso montar um exemplo prático de um modelo de dados relacional vs. não relacional. Deseja isso?
 
 
