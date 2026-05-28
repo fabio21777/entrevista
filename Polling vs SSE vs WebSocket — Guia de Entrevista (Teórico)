@@ -1,0 +1,162 @@
+# Polling vs SSE vs WebSocket — Guia de Entrevista (Teórico)
+
+> Material de estudo em formato Q&A. Foco conceitual, sem código.
+
+---
+
+## 1. Conceitos fundamentais
+
+### P: O que é Polling?
+**R:** A abordagem mais antiga e simples: o cliente faz requisições HTTP repetidas perguntando ao servidor se há novidade. Existem duas variações:
+- **Short polling:** o cliente pergunta em intervalos fixos (ex.: a cada 5s). Simples, mas desperdiça requisições — a maioria volta vazia — e a novidade só chega no próximo ciclo.
+- **Long polling:** o cliente faz a requisição e o servidor **segura** a resposta até ter algo novo (ou estourar timeout); ao responder, o cliente abre outra imediatamente. Reduz desperdício e latência, mas mantém o servidor segurando conexões e tem o custo de reabrir a cada evento. É o "truque" pré-SSE para simular push sobre HTTP comum.
+
+### P: O que é SSE (Server-Sent Events)?
+**R:** Um mecanismo de push **unidirecional** (servidor → cliente) sobre HTTP comum. O cliente abre uma conexão persistente e o servidor empurra eventos de texto à medida que ocorrem. O cliente não envia dados por esse canal — continua usando requisições HTTP normais para isso. No browser é consumido pela API `EventSource`.
+
+### P: O que é WebSocket?
+**R:** Um protocolo de comunicação **bidirecional e full-duplex** sobre uma única conexão TCP persistente. Após um *handshake* HTTP inicial com cabeçalho de upgrade, a conexão muda de protocolo (`ws://` ou `wss://`) e ambos os lados podem enviar mensagens — texto ou binário — a qualquer momento.
+
+### P: Qual é a diferença essencial entre os dois?
+**R:** A **direção do fluxo**:
+- SSE: só o servidor fala, o cliente escuta.
+- WebSocket: os dois falam, a qualquer momento.
+
+E o **transporte**: SSE é HTTP puro; WebSocket é um protocolo próprio após o upgrade.
+
+### P: Por que SSE ser "HTTP puro" importa?
+**R:** Porque herda toda a infraestrutura HTTP existente — autenticação, cabeçalhos, compressão, proxies, balanceadores de carga e firewalls lidam com ele sem configuração especial. WebSocket, por mudar de protocolo, frequentemente exige ajustes nessa camada.
+
+---
+
+## 2. Comparativo direto
+
+| Aspecto | SSE | WebSocket |
+|---|---|---|
+| Direção | Unidirecional (servidor → cliente) | Bidirecional (full-duplex) |
+| Protocolo | HTTP/HTTPS | ws:// / wss:// (após upgrade HTTP) |
+| Formato de dados | Apenas texto (UTF-8) | Texto e binário |
+| Reconexão automática | Sim, nativa no browser | Não (implementar manualmente) |
+| Retomar de onde parou | Sim (`Last-Event-ID`) | Não nativo |
+| Compatível com proxies/LB | Alta (é HTTP) | Pode exigir configuração extra |
+| Complexidade | Baixa | Média/alta |
+| Limite de conexões | HTTP/1.1: ~6 por domínio; HTTP/2: resolvido via multiplexação | 1 conexão por canal |
+| Overhead por mensagem | Cabeçalhos de evento (texto) | Frames leves (2–14 bytes) |
+| Estado no servidor | Conexão HTTP de longa duração | Conexão persistente com estado |
+
+---
+
+## 2b. Comparativo dos três (Polling vs SSE vs WebSocket)
+
+| Aspecto | Polling | SSE | WebSocket |
+|---|---|---|---|
+| Direção | Cliente pergunta, servidor responde | Servidor → cliente | Bidirecional (full-duplex) |
+| Conexão | Requisições HTTP repetidas e independentes | Uma conexão HTTP persistente | Uma conexão TCP persistente (após upgrade) |
+| Protocolo | HTTP/HTTPS | HTTP/HTTPS | ws:// / wss:// |
+| Latência | Alta (limitada pelo intervalo) | Baixa | Muito baixa |
+| Tempo real? | Simulado (depende do intervalo) | Sim (push real) | Sim (push real, ambos os lados) |
+| Overhead | Alto (headers em toda requisição, respostas vazias) | Baixo | Muito baixo (frames leves) |
+| Reconexão | Trivial (é só repetir a requisição) | Automática e nativa | Manual |
+| Dados binários | Sim (é HTTP) | Não (só texto UTF-8) | Sim |
+| Complexidade | Mínima | Baixa | Média/alta |
+| Infra (proxy/LB/firewall) | Transparente | Transparente (é HTTP) | Pode exigir configuração |
+
+### P: Como decidir entre os três?
+**R:**
+> Nada de tempo real / dados raros e tolerantes a atraso → **Polling** (short)
+> Servidor empurra, cliente só escuta → **SSE**
+> Os dois conversam o tempo todo, baixa latência → **WebSocket**
+
+**Linha do raciocínio:** polling é o piso de simplicidade e compatibilidade, mas paga em desperdício e latência. SSE elimina o desperdício mantendo a simplicidade do HTTP, desde que o fluxo seja só de volta. WebSocket entrega o canal completo, ao custo de mais infraestrutura e código. A armadilha clássica é pular direto pro WebSocket quando o caso é só push (SSE) ou até só dado esporádico (polling).
+
+---
+
+## 3. Quando usar cada um
+
+### P: Quais casos pedem SSE?
+**R:** Cenários de *push* do servidor, sem necessidade de canal de retorno persistente:
+- Streaming de respostas de LLM (token a token).
+- Notificações, alertas e feeds de atividade.
+- Progresso de jobs assíncronos (ex.: `PROCESSING → AUDIO_GENERATED → FINISHED`).
+- Dashboards com métricas que atualizam sozinhas.
+- Logs em tempo real.
+
+### P: Quais casos pedem WebSocket?
+**R:** Cenários de conversa frequente e baixa latência nos dois sentidos:
+- Chat em tempo real (mensagens, presença, indicador de digitação).
+- Edição colaborativa (tipo Google Docs).
+- Jogos, leilões ao vivo, trading.
+- Transmissão de dados binários.
+- Cliente que emite eventos com alta frequência, não apenas responde.
+
+### P: Regra prática para decidir?
+**R:**
+> Servidor fala, cliente escuta → **SSE**
+> Os dois falam o tempo todo → **WebSocket**
+
+**Armadilha comum:** ir direto para WebSocket por hábito. A maioria dos casos de "tempo real" é só *push* do servidor, onde SSE resolve com muito menos complexidade. Só suba para WebSocket quando precisar mesmo do canal de retorno persistente.
+
+---
+
+## 4. Perguntas técnicas frequentes
+
+### P: SSE funciona sobre HTTP/2? Resolve o limite de 6 conexões?
+**R:** Sim. Em HTTP/1.1 o browser limita a ~6 conexões persistentes por domínio, o que estoura rápido com várias abas usando SSE. Com HTTP/2 há multiplexação de streams sobre uma única conexão TCP, eliminando o gargalo na prática.
+
+### P: Como funciona a reconexão no SSE?
+**R:** O browser reconecta automaticamente após queda. Se o servidor enviou um campo `id` em cada evento, o browser reenvia o último valor no cabeçalho `Last-Event-ID` ao reconectar, permitindo que o servidor retome do ponto correto. O servidor também pode sugerir o intervalo de retry com o campo `retry`.
+
+### P: WebSocket reconecta sozinho?
+**R:** Não. É preciso implementar a lógica manualmente (backoff exponencial é o padrão) ou usar uma biblioteca de mais alto nível, que já traz reconexão, heartbeat e fallback.
+
+### P: SSE consegue mandar dados binários?
+**R:** Não nativamente — o formato é texto UTF-8. Para binário seria preciso codificar em Base64 (com overhead) ou usar WebSocket.
+
+### P: Como o cliente envia dados se está usando SSE?
+**R:** Por requisições HTTP normais (POST/PUT/etc.) em paralelo ao stream. SSE cobre só o caminho de volta (servidor → cliente).
+
+### P: Quais os limites de payload e mensagem?
+**R:** SSE não tem limite rígido de tamanho de evento, mas mensagens muito grandes são desaconselhadas (o canal é orientado a eventos curtos). WebSocket suporta frames grandes e fragmentação, sendo mais adequado a payloads volumosos ou contínuos.
+
+### P: Como cada um lida com autenticação?
+**R:** SSE, por ser HTTP, pode usar cookies de sessão de forma transparente; o porém é que a API `EventSource` nativa não envia cabeçalhos customizados (ex.: `Authorization`), exigindo cookie, query param ou biblioteca alternativa. WebSocket também autentica no handshake inicial (HTTP), mas depois do upgrade não há mais cabeçalhos por mensagem — autenticação contínua precisa ser feita na camada de aplicação.
+
+---
+
+## 5. Suporte por linguagem e ecossistema
+
+### P: Como SSE e WebSocket aparecem no backend Java/Spring?
+**R:** Em SSE, Spring MVC expõe via um emissor de eventos de servidor, e Spring WebFlux via um fluxo reativo de eventos — este último é o mais natural para streaming. Em WebSocket, o padrão usual é STOMP sobre WebSocket com um broker de mensagens, configurando endpoints e tópicos de inscrição.
+
+### P: Cuidado de segurança com SSE no Spring Security?
+**R:** Em endpoints SSE com dispatch assíncrono pode surgir uma exceção de acesso negado no re-dispatch da requisição. A correção é liberar o tipo de dispatch assíncrono na configuração de segurança.
+
+### P: E no frontend (JavaScript)?
+**R:** SSE é consumido pela API nativa `EventSource`, que cuida da conexão e da reconexão automática. WebSocket usa a API nativa `WebSocket`, com os eventos de abertura, mensagem, fechamento e erro tratados manualmente. Ambos funcionam igualmente em React, Vue e Angular — o que muda é apenas onde a conexão é encapsulada: um hook no React, um composable no Vue, ou um serviço injetável no Angular. A escolha entre SSE e WebSocket é independente do framework de UI.
+
+### P: O framework de frontend influencia a decisão SSE vs WebSocket?
+**R:** Não. A decisão é dirigida pela direção do fluxo de dados e pelos requisitos de latência, não pela tecnologia da camada de apresentação. React, Vue e Angular consomem ambos sem diferença conceitual.
+
+---
+
+## 6. Perguntas de fechamento (cenário)
+
+### P: Você precisa fazer streaming da resposta de um LLM token a token. SSE ou WebSocket?
+**R:** SSE. O fluxo é só servidor → cliente, é texto, e a reconexão nativa ajuda. WebSocket seria complexidade desnecessária.
+
+### P: Chat com indicador de digitação e presença online. SSE ou WebSocket?
+**R:** WebSocket. O cliente emite eventos constantemente (digitando, online/offline), exigindo canal bidirecional de baixa latência.
+
+### P: Dashboard de métricas que atualiza a cada 5s. SSE, WebSocket ou polling?
+**R:** SSE é o ponto ideal: push contínuo do servidor sem complexidade de WebSocket. Polling desperdiça requisições; WebSocket é exagero se o cliente nada emite.
+
+### P: E quando o time já tem infraestrutura WebSocket pronta e precisa só de push simples?
+**R:** Aceitável reusar WebSocket para evitar manter dois mecanismos — decisão de pragmatismo/arquitetura, não técnica pura. Mas vale registrar que SSE seria mais simples para o caso isolado.
+
+---
+
+## Resumo de uma linha
+
+- **Polling** = requisições HTTP repetidas. Simples e universal, mas com desperdício e latência. Ideal para dados esporádicos e tolerantes a atraso.
+- **SSE** = push HTTP unidirecional, simples, com reconexão automática. Ideal para streaming, notificações e progresso.
+- **WebSocket** = canal bidirecional full-duplex. Ideal para chat, colaboração e alta interatividade.
